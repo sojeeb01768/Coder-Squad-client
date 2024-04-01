@@ -1,21 +1,40 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../../Provider/AuthProviders";
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { updateProfile } from "firebase/auth";
 
 const Register = () => {
 
     const {
-        register, handleSubmit, watch, formState: { errors }, } = useForm()
+        register, handleSubmit, watch, formState: { errors }, reset} = useForm();
+        const navigate = useNavigate();
+        const {createUser}= useContext(AuthContext);
 
-    const onSubmit = (data) => {
+    const handleSignUp = (data) => {
         console.log(data);
+        createUser(data.email, data.password)
+        .then(result =>{
+            const loggedUser = reset.user;
+            updateUser(result.user,data.name)
+            reset();
+            navigate('/')
+            console.log(loggedUser);
+        })
+        
     }
-    console.log(watch("example"))
+    const updateUser = (user, name) => {
+        updateProfile(user, {
+            displayName: name,
+        })
+            .then(() => { })
+            .catch(error => {
+                console.log(error);
+            })
+    }
 
-    const [showSignUp, setShowSignUp] = useState(false);
-
-    
+    // console.log(watch("example"))
+    // const [showSignUp, setShowSignUp] = useState(false);
 
     return (
         <div className="md:flex justify-center items-center mt-40 lg:mt-32 ">
@@ -24,7 +43,7 @@ const Register = () => {
             <div className='bg-white p-6 rounded-md shadow-lg border  border-[#f5e7e7]'>
                 <h1 className=" text-center text-slate-600 font-bold text-3xl my-10">Sign Up</h1>
 
-                <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+                <form onSubmit={handleSubmit(handleSignUp)} className='space-y-4'>
                     <input type="name" {...register("name", { required: true, pattern: /^[A-Z a-z]+$/i })} name="name" className='block w-full p-3 border rounded-md focus:outline-[#2D9596]' placeholder='Name' />
                     {errors.name && <span className="text-xs text-red-500">Name is required</span>}
                     <input type="email" {...register("email", { required: true })} name="email" className='block w-full p-3 border rounded-md focus:outline-[#2D9596]' placeholder='Email Address' />
