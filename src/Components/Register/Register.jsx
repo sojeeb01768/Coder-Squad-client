@@ -3,26 +3,41 @@ import { AuthContext } from "../../Provider/AuthProviders";
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
+import axiosInstance from "../../Global/AxiosInstance";
 
 const Register = () => {
 
     const {
-        register, handleSubmit, watch, formState: { errors }, reset} = useForm();
-        const navigate = useNavigate();
-        const {createUser}= useContext(AuthContext);
+        register, handleSubmit, watch, formState: { errors }, reset } = useForm();
+    const navigate = useNavigate();
+    const { createUser } = useContext(AuthContext);
+
 
     const handleSignUp = (data) => {
         console.log(data);
         createUser(data.email, data.password)
-        .then(result =>{
-            const loggedUser = reset.user;
-            updateUser(result.user,data.name)
-            reset();
-            navigate('/')
-            console.log(loggedUser);
-        })
-        
+            .then(result => {
+                updateUser(result.user, data.name);
+                // Send user's name and email to backend server
+                axiosInstance.post('user', {
+                    name: data.name,
+                    email: data.email
+                })
+                    .then(response => {
+                        console.log(response.data);
+                        reset();
+                        navigate('/');
+                    })
+                    .catch(error => {
+                        console.error('Error updating MongoDB:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error creating user:', error);
+            });
     }
+
+
     const updateUser = (user, name) => {
         updateProfile(user, {
             displayName: name,
@@ -63,7 +78,7 @@ const Register = () => {
                 <hr className='my-5' />
                 <div className='flex justify-center '>
                     <Link to='/login'>
-                    <button className=' w-full text-lg font-bold text-slate-600 py-3 rounded-md'  >Already have any account?</button>
+                        <button className=' w-full text-lg font-bold text-slate-600 py-3 rounded-md'  >Already have any account?</button>
                     </Link>
                 </div>
 

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 
 
 const Login = () => {
-    const { signIn } = useContext(AuthContext);
+    const { signIn, loading } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const {register, handleSubmit, watch, formState: { errors },reset } = useForm()
@@ -17,6 +17,7 @@ const Login = () => {
                 const loginUser = result.user
                 reset();
                 navigate('/')
+                loading(false);
             })
             .catch(error => {
                 console.log(error);
@@ -34,7 +35,7 @@ const Login = () => {
                             {errors.email && <span className="text-xs text-red-500">Email is required</span>}
                             <input type="password" name="password" {...register("password", { required: true, minLength: 6, pattern: /^(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/ })} className='block w-full p-3 border rounded-md focus:outline-[#2D9596]' placeholder='Password' />
                             {errors.password && <span className="text-xs text-red-500">Password is required</span>}
-                            <button type="submit" className='block w-full md:w-96 p-3 text-white font-bold bg-slate-600 rounded-md'>Sign Up</button>
+                            <button type="submit" className='block w-full md:w-96 p-3 text-white font-bold bg-slate-600 rounded-md'>Log In</button>
                         </form>
 
                         <hr className='my-5' />
