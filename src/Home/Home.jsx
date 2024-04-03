@@ -4,12 +4,17 @@ import { IoLogOutOutline } from "react-icons/io5";
 import TaskCard from '../Components/TaskCard/TaskCard';
 import { AuthContext } from '../Provider/AuthProviders';
 import axiosInstance from '../Global/AxiosInstance';
+import UpdateForm from '../Components/UpdateForm/UpdateForm';
 
 const Home = () => {
     const [showForm, setShowForm] = useState(false);
     const { user, logOut } = useContext(AuthContext);
     const [tasks, setTasks] = useState([]);
     const [error, setError] = useState('');
+
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const tasksPerPage = 4;
 
     const handleLogOut = () => {
         logOut()
@@ -35,6 +40,7 @@ const Home = () => {
             const response = await axiosInstance.post('/addTask', addedTask);
             fetchTasks();
             event.target.reset();
+            toggleForm();
         } catch (error) {
             console.log('failed to add task', error.message);
         }
@@ -48,15 +54,44 @@ const Home = () => {
                 return;
             }
             setTasks(response.data);
-            console.log(response.data);
         } catch (error) {
             console.log('Failed to fetch tasks', error.message);
         }
     };
 
+    const handleDelete = (taskId) => {
+        setTasks((prevTasks) => prevTasks.filter((tasks) => tasks.id !== taskId))
+        fetchTasks();
+    };
+
+    const handleUpdate = async (updatedTask) => {
+        try {
+            await axiosInstance.put(`/updateTask/${updatedTask._id}`, updatedTask);
+            fetchTasks();
+        } catch (error) {
+            console.error('Failed to update task:', error);
+        }
+    };
+
+
+    if (!tasks || tasks.length === 0) {
+        return <div>No tasks available.</div>;
+    }
+
+    // Calculate index of the last task on the current page
+    const indexOfLastTask = currentPage * tasksPerPage;
+    // Calculate index of the first task on the current page
+    const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+    // Slice the tasks array to get tasks for the current page
+    const currentTasks = tasks.slice(indexOfFirstTask, indexOfLastTask);
+
+    // Logic to handle page navigation
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+
+
     return (
-        <div className='h-screen bg-[#597a67] lg:pt-20'>
-            <div className='max-w-5xl h-full lg:h-[492px] relative mx-auto bg-[#35413c]'>
+        <div className='h-screen bg-[#597a67] lg:pt-20 '>
+            <div className='max-w-5xl h-full lg:h-[492px] relative mx-auto bg-[#35413c] '>
                 <div className='flex justify-between items-center px-6 pt-6'>
                     <div className='flex space-x-4 items-center'>
                         <div>
@@ -86,9 +121,20 @@ const Home = () => {
                 )}
 
                 <div className='mt-5 px-6 space-y-3'>
-                    {
-                        tasks.map(task => <TaskCard key={task?._id} task={task}></TaskCard>)
-                    }
+                    {currentTasks.map(task => (
+                        <TaskCard fetchTasks={fetchTasks} key={task?._id} task={task} onDelete={handleDelete} onUpdate={handleUpdate} />
+                    ))}
+                </div>
+                <div className="mt-5 flex justify-center">
+                    {Array.from({ length: Math.ceil(tasks.length / tasksPerPage) }, (_, i) => (
+                        <button
+                            key={i}
+                            className={`mx-1 px-3 py-1 rounded-md ${currentPage === i + 1 ? 'bg-gray-500 text-slate-200' : 'bg-gray-200 hover:bg-gray-400'}`}
+                            onClick={() => paginate(i + 1)}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
                 </div>
             </div>
         </div>
