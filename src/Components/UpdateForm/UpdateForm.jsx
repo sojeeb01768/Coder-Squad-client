@@ -15,7 +15,7 @@ const UpdateForm = ({ isOpen, closeModal,addedTask, setUpdatedTask, handleUpdate
         <div>
             {
                 isOpen && (
-                    <div className="max-w-5xl fixed top-20 left-64 w-full mx-auto bg-[#94aba1] p-6">
+                    <div className="lg:max-w-5xl fixed top-0 left-0 lg:top-20 lg:left-64 w-full mx-auto bg-[#94aba1] p-6">
                         <h2 className="text-xl font-bold mb-4 text-white">Update Task</h2>
                         <form onSubmit={handleSubmit}> 
                             <div className="mb-4">

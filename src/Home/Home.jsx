@@ -4,7 +4,7 @@ import { IoLogOutOutline } from "react-icons/io5";
 import TaskCard from '../Components/TaskCard/TaskCard';
 import { AuthContext } from '../Provider/AuthProviders';
 import axiosInstance from '../Global/AxiosInstance';
-import UpdateForm from '../Components/UpdateForm/UpdateForm';
+
 
 const Home = () => {
     const [showForm, setShowForm] = useState(false);
@@ -50,7 +50,8 @@ const Home = () => {
         try {
             const response = await axiosInstance.get(`/myTasks/${user?.email}`);
             if (!response.data || response.data.length === 0) {
-                console.log('No tasks found');
+                // console.log('No tasks found');
+                
                 return;
             }
             setTasks(response.data);
@@ -74,9 +75,9 @@ const Home = () => {
     };
 
 
-    if (!tasks || tasks.length === 0) {
-        return <div>No tasks available.</div>;
-    }
+    // if (!tasks || tasks.length === 0) {
+    //     return <div >No tasks available.</div>;
+    // }
 
     // Calculate index of the last task on the current page
     const indexOfLastTask = currentPage * tasksPerPage;
@@ -120,11 +121,17 @@ const Home = () => {
                     </div>
                 )}
 
-                <div className='mt-5 px-6 space-y-3'>
-                    {currentTasks.map(task => (
-                        <TaskCard fetchTasks={fetchTasks} key={task?._id} task={task} onDelete={handleDelete} onUpdate={handleUpdate} />
-                    ))}
-                </div>
+                {
+                    tasks.length === 0 ?
+                        <h1 className='text-center text-slate-200 text-2xl mt-5'>Task Not Available</h1>
+                        :
+                        <div className='mt-5 px-6 space-y-3'>
+                            {currentTasks.map(task => (
+                                <TaskCard fetchTasks={fetchTasks} key={task?._id} task={task} onDelete={handleDelete} onUpdate={handleUpdate} />
+                            ))}
+                        </div>
+
+                }
                 <div className="mt-5 flex justify-center">
                     {Array.from({ length: Math.ceil(tasks.length / tasksPerPage) }, (_, i) => (
                         <button

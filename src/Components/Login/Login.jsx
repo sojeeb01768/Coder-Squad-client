@@ -8,7 +8,7 @@ const Login = () => {
     const { signIn, loading } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const {register, handleSubmit, watch, formState: { errors },reset } = useForm()
+    const {register, handleSubmit, formState: { errors },reset } = useForm()
 
     const handleLogIn = (data) => {
         console.log(data);

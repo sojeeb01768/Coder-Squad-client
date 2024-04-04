@@ -48,8 +48,8 @@ const TaskCard = ({ task: addedTask, onDelete, onUpdate, fetchTasks }) => {
             console.error('Failed to update task:', error);
         }
     };
-    const taskContent = task.split(' ').slice(0, 10).join(' ');
-    const showSeeMoreButton = task.split(' ').length > 15;
+    const taskContent = task.split(' ').slice(0, 5).join(' ');
+    const showSeeMoreButton = task.split(' ').length > 5;
     return (
         <div className='bg-slate-600/50 cursor-pointer border-y border-slate-800 text-white  p-3'>
             <div className="flex justify-between items-center">
@@ -60,11 +60,11 @@ const TaskCard = ({ task: addedTask, onDelete, onUpdate, fetchTasks }) => {
                     )}
 
                 </div>
-                <div>
+                <div className='flex gap-x-2'>
                     <button onClick={openModal} className="text-2xl text-red-500 hover:text-red-600 duration-300 px-5 p-1">
                         <MdOutlineDeleteOutline />
                     </button>
-                    <button onClick={openUpdateModal} className="text-2xl text-slate-200 hover:text-slate-300 duration-300 px-5 p-1">
+                    <button onClick={openUpdateModal} className=" hidden md:block text-2xl text-slate-200 hover:text-slate-300 duration-300 px-5 p-1">
                         <FaPen />
                     </button>
                 </div>
